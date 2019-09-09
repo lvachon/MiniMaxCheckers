@@ -10,6 +10,16 @@
 				board.setForCheckers();
 				redPlayer = new MinMaxPlayer(RED);
 				blackPlayer = new MinMaxPlayer(BLACK);
+				redPlayer.searchDepth=reddepth.value*1;
+				redPlayer.pieceWeight=redpiece.value*1;
+				redPlayer.kingWeight=redpiece.value*1;
+				redPlayer.stalemateWeight=redwin.value*1;
+
+				blackPlayer.searchDepth=blkdepth.value*1;
+				blackPlayer.pieceWeight=blkpiece.value*1;
+				blackPlayer.kingWeight=blkpiece.value*1;
+				blackPlayer.stalemateWeight=blkwin.value*1;
+
 				redTurn = true;
 				current_board.innerHTML=board.toTable();
 				run = false;
@@ -19,29 +29,33 @@
 				if(redTurn){
 					board = redPlayer.pickNextMove(board);
 					current_board.innerHTML=board.toTable();
-					let HTML='';
-					redPlayer.rootNode.children.forEach(node=>{
-						HTML+="<div class='boardparent'>"+node.board.toTable()+"("+node.value+")";
-						HTML+="<div class='children'>";
-						node.children.forEach(node=>{
-							HTML+="<div class='board'>"+node.board.toTable()+"("+node.value+")</div>";
+					if(showBrains.checked){
+						let HTML='';
+						redPlayer.rootNode.children.forEach(node=>{
+							HTML+="<div class='boardparent'>"+node.board.toTable()+"("+node.value+")";
+							HTML+="<div class='children'>";
+							node.children.forEach(node=>{
+								HTML+="<div class='board'>"+node.board.toTable()+"("+node.value+")</div>";
+							});
+							HTML+="</div></div><div style='clear:both;'></div>";
 						});
-						HTML+="</div></div><div style='clear:both;'></div>";
-					});
-					redbrain.innerHTML=HTML;
+						redbrain.innerHTML=HTML;
+					}
 				}else{
 					board = blackPlayer.pickNextMove(board);
 					current_board.innerHTML=board.toTable();
-					HTML='';
-					blackPlayer.rootNode.children.forEach(node=>{
-						HTML+="<div class='boardparent'>"+node.board.toTable()+"("+node.value+")";
-						HTML+="<div class='children'>";
-						node.children.forEach(node=>{
-							HTML+="<div class='board'>"+node.board.toTable()+"("+node.value+")</div>";
+					if(showBrains.checked){
+						HTML='';
+						blackPlayer.rootNode.children.forEach(node=>{
+							HTML+="<div class='boardparent'>"+node.board.toTable()+"("+node.value+")";
+							HTML+="<div class='children'>";
+							node.children.forEach(node=>{
+								HTML+="<div class='board'>"+node.board.toTable()+"("+node.value+")</div>";
+							});
+							HTML+="</div></div><div style='clear:both;'></div>";
 						});
-						HTML+="</div></div><div style='clear:both;'></div>";
-					});
-					blackbrain.innerHTML=HTML;
+						blackbrain.innerHTML=HTML;
+					}
 				}
 				redTurn=!redTurn;
 				if(run){
@@ -74,6 +88,7 @@
 			.checker {width:8px;height:18px;}
 			.children .board tr td .checker {width:auto;height:auto;}
 			#current_board table {transform: scale(2.0) translate(25%, 25%);}
+			input[type="text"] {width:4em;}
 		</style>
 		<title>CHECKERS AI</title>
 	</head>
@@ -82,6 +97,16 @@
 			<input type='button' value='Step' onclick='stepo()'/>
 			<input type='button' value='Run' onclick='runo()'/>
 			<input type='button' value='Stop' onclick='stopo()'/>
+			<label><input type='checkbox' checked id='showBrains'/>Show Brains</label> | Red:
+			<input type='text' placeholder='depth' id='reddepth' value='4'/>
+			<input type='text' placeholder='piece value' id='redpiece' value='1'/>
+			<input type='text' placeholder='king value' id='redking' value='2'/>
+			<input type='text' placeholder='win/lose value' id='redwin' value='100'/> | Black:
+			<input type='text' placeholder='depth' id='blkdepth' value='4'/>
+			<input type='text' placeholder='piece value' id='blkpiece' value='1'/>
+			<input type='text' placeholder='king value' id='blkking' value='2'/>
+			<input type='text' placeholder='win/lose value' id='blkwin' value='100'/>
+			<input type='button' value='init' onclick='stop();init();'/>
 		</div>
 		<div id='display'>
 			<div id='current_board' class='float'></div>
