@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<script src='board.js'></script>
+		<script src='minmax.js'></script>
+		<script>
+			function init(){
+				board = new Board();
+				board.setForCheckers();
+				redPlayer = new MinMaxPlayer(RED);
+				blackPlayer = new MinMaxPlayer(BLACK);
+				redTurn = true;
+				current_board.innerHTML=board.toTable();
+				run = false;
+			}
+			function stepo(){
+				clearTimeout(intv);
+				if(redTurn){
+					board = redPlayer.pickNextMove(board);
+					current_board.innerHTML=board.toTable();
+					let HTML='';
+					redPlayer.rootNode.children.forEach(node=>{
+						HTML+="<div class='boardparent'>"+node.board.toTable()+"("+node.value+")";
+						HTML+="<div class='children'>";
+						node.children.forEach(node=>{
+							HTML+="<div class='board'>"+node.board.toTable()+"("+node.value+")</div>";
+						});
+						HTML+="</div></div><div style='clear:both;'></div>";
+					});
+					redbrain.innerHTML=HTML;
+				}else{
+					board = blackPlayer.pickNextMove(board);
+					current_board.innerHTML=board.toTable();
+					HTML='';
+					blackPlayer.rootNode.children.forEach(node=>{
+						HTML+="<div class='boardparent'>"+node.board.toTable()+"("+node.value+")";
+						HTML+="<div class='children'>";
+						node.children.forEach(node=>{
+							HTML+="<div class='board'>"+node.board.toTable()+"("+node.value+")</div>";
+						});
+						HTML+="</div></div><div style='clear:both;'></div>";
+					});
+					blackbrain.innerHTML=HTML;
+				}
+				redTurn=!redTurn;
+				if(run){
+					intv = setTimeout('stepo()',100);
+				}
+			}
+			let intv = 0;
+			function runo(){
+				if(!run){
+					run = true;
+					stepo();
+				}
+			}
+			function stopo(){
+				run = false;
+				clearTimeout(intv);
+			}
+		</script>
+		<style>
+			.red {color: red;}
+			.black {color: black;}
+			.light {background:#EEEEEE;}
+			.dark {background:#A0A0A0;}
+			.float {width:400px;height:800px;float:left;}
+			.boardparent {width:400px;height:200px;}
+			.boardparent table {float:left;}
+			.children {float:right;width:300px;height:200px;overflow-x:auto;}
+			.children table {font-size:2pt;font-weight:bold;}
+			.board {float:left;}
+			.checker {width:8px;height:18px;}
+			.children .board tr td .checker {width:auto;height:auto;}
+			#current_board table {transform: scale(2.0) translate(25%, 25%);}
+		</style>
+		<title>CHECKERS AI</title>
+	</head>
+	<body>
+		<div id='controls'>
+			<input type='button' value='Step' onclick='stepo()'/>
+			<input type='button' value='Run' onclick='runo()'/>
+			<input type='button' value='Stop' onclick='stopo()'/>
+		</div>
+		<div id='display'>
+			<div id='current_board' class='float'></div>
+			<div id='redbrain' class='float' style='background:#FFE0E0'></div>
+			<div id='blackbrain' class='float' style='background:#E0E0E0'></div>
+		</div>
+	</body>
+	<script>
+		init();
+	</script>
+</html>
